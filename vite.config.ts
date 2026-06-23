@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: "/Student-Study-Group-Finder/",
+  base: "/",
 
   plugins: [
     react(),

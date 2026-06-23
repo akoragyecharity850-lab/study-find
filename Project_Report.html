@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Report - Student Study Group Finder</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            text-align: justify;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            color: #000;
+        }
+        h1, h2, h3, h4 { color: #000; text-align: left; }
+        .center-heading { text-align: center; }
+        .page-break { page-break-after: always; }
+        .cover { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: left; }
+        .mermaid { text-align: center; margin: 20px auto; }
+        a { color: #0000EE; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+    <!-- Load Mermaid.js for Diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <!-- COVER PAGE -->
+    <div class="cover">
+        <h2 class="center-heading" style="margin-bottom: 0;">UGANDA CHRISTIAN UNIVERSITY</h2>
+        <h3 class="center-heading" style="margin-top: 5px;">FACULTY OF ENGINEERING, DESIGN AND TECHNOLOGY</h3>
+        <h4 class="center-heading" style="margin-top: 5px;">DEPARTMENT OF COMPUTING AND TECHNOLOGY</h4>
+        <br/><br/>
+        <p class="center-heading"><strong>COURSE CODE:</strong> CSC1202</p>
+        <p class="center-heading"><strong>COURSE NAME:</strong> WEB AND MOBILE APPLICATION DEVELOPMENT</p>
+        <br/><br/>
+        <h1 class="center-heading" style="text-decoration: underline;">PROJECT REPORT</h1>
+        <h2 class="center-heading">"STUDENT STUDY GROUP FINDER"</h2>
+        <br/><br/>
+        <p class="center-heading"><strong>PROGRAM:</strong> BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT) Y1S2</p>
+        <p class="center-heading"><strong>SUBMISSION DATE:</strong> APRIL 2026</p>
+    </div>
+    
+    <div class="page-break"></div>
+
+    <h2>1. Introduction</h2>
+    <p>Collaborative learning is a critical aspect of tertiary education, providing students the platform to enhance their academic experiences. Currently, finding and organizing study groups at Uganda Christian University largely depends on informal personal networks and impromptu social media interactions, often limiting broader participation.</p>
+    <p>The <strong>Student Study Group Finder</strong> aims to directly address this limitation. It provides a structured, digital platform where students can create, discover, and actively manage academic study groups. This ensures a centralized, accessible, and inclusive environment, promoting academic excellence and collaborative learning across all university faculties.</p>
+
+    <h2>2. Problem Statement & Objectives</h2>
+    <h3>Problem Statement</h3>
+    <p>The challenge students face is the fragmented and isolated nature of forming academic alliances. Without a centralized hub, students missing initial social connections struggle to find study groups tailored to their specific courses, minimizing equal learning opportunities.</p>
+    <h3>Objectives</h3>
+    <ul>
+        <li>To implement secure user authentication and student profile management.</li>
+        <li>To provide functionalities for the creation, management, and discovery of study groups based on courses and faculties.</li>
+        <li>To enable group leaders to schedule and organize study sessions seamlessly.</li>
+        <li>To implement group communication tools (posts/announcements) for collaborative preparation.</li>
+    </ul>
+
+    <h2>3. Technology Stack & Choices</h2>
+    <p>In line with fulfilling the requirement of a scalable and robust minimal viable product (MVP), the following stack was utilized:</p>
+    <ul>
+        <li><strong>Frontend Framework:</strong> React.js configured with Vite. Selected for fast rendering, component reusability, and efficient state management.</li>
+        <li><strong>Styling:</strong> Tailwind CSS & Radix UI (shadcn/ui). Chosen for utility-first styling and extremely accessible User Interface components, ensuring a robust responsive design on desktop and mobile.</li>
+        <li><strong>Backend Framework / Database:</strong> Supabase (PostgreSQL with PostgREST). Chosen for secure JWT authentication out-of-the-box, real-time table capabilities, and reliable relational configurations mimicking standard backend logic.</li>
+        <li><strong>Hosting / Deployment:</strong> GitHub Pages (frontend delivery).</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>4. System Architecture</h2>
+    <p>The application leverages a modern Client-Server Architecture utilizing a Backend-as-a-Service (BaaS) infrastructure. This perfectly maximizes UI rendering efficiency by offloading work to the client, while abstracting and standardizing backend API integrations smoothly.</p>
+    
+    <div class="mermaid">
+flowchart TD
+    User([Student / System User]) -->|HTTPS| Frontend(React/Vite Frontend Interface)
+    Frontend -->|JWT Authentication| SupabaseAuth(Supabase Auth Protocol)
+    Frontend -->|REST API over HTTPS| SupabaseAPI(Supabase PostgREST API)
+    SupabaseAPI -->|SQL queries & filters| PostgreSQL[(PostgreSQL Database)]
+    SupabaseAuth --> PostgreSQL
+    
+    subgraph Client-Side Subsystem [Frontend Environment]
+    ReactComponents[React UI Components & Pages]
+    ReactQuery[React Query - State Management]
+    Tailwind[Tailwind CSS - Dynamic Styling]
+    ReactComponents --> ReactQuery
+    ReactComponents --> Tailwind
+    end
+
+    Frontend --- Client-Side Subsystem
+    
+    subgraph Server-Side Subsystem [Backend Environment]
+    SupabaseAuth
+    SupabaseAPI
+    PostgreSQL
+    end
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>5. Entity Relationship (ER) Diagram</h2>
+    <p>The database relies on a highly normalized relational setup leveraging PostgreSQL types to preserve referential integrity across modules.</p>
+    
+    <div class="mermaid">
+erDiagram
+    PROFILES {
+        uuid id PK
+        string full_name
+        string program_of_study
+        int year_of_study
+        string avatar_url
+    }
+    STUDY_GROUPS {
+        uuid id PK
+        string name
+        string course_name
+        string course_code
+        string description
+        string faculty
+        string meeting_location
+        uuid leader_id FK
+    }
+    GROUP_MEMBERS {
+        uuid id PK
+        uuid group_id FK
+        uuid user_id FK
+        timestamp joined_at
+    }
+    GROUP_POSTS {
+        uuid id PK
+        uuid group_id FK
+        uuid user_id FK
+        string content
+        timestamp created_at
+    }
+    STUDY_SESSIONS {
+        uuid id PK
+        uuid group_id FK
+        string title
+        string description
+        date session_date
+        time session_time
+        string location
+        string meeting_link
+        uuid created_by FK
+    }
+    USER_ROLES {
+        uuid id PK
+        uuid user_id FK
+        string role
+    }
+
+    PROFILES ||--o{ STUDY_GROUPS : leads
+    PROFILES ||--o{ GROUP_MEMBERS : "belongs to"
+    STUDY_GROUPS ||--o{ GROUP_MEMBERS : "has members"
+    PROFILES ||--o{ GROUP_POSTS : writes
+    STUDY_GROUPS ||--o{ GROUP_POSTS : contains
+    PROFILES ||--o{ STUDY_SESSIONS : "created by"
+    STUDY_GROUPS ||--o{ STUDY_SESSIONS : schedules
+    PROFILES ||--o| USER_ROLES : has
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>6. System Features & User Manual</h2>
+    
+    <h3>6.1 Registration and Authentication</h3>
+    <ul>
+        <li><strong>Step 1:</strong> Navigate to the web application URL.</li>
+        <li><strong>Step 2:</strong> Click on <strong>Sign Up / Login</strong>. Input your correct Full Name, Program of Study, Year of Study, institutional Email Address, and secure Password.</li>
+        <li><strong>Step 3:</strong> Once successfully verified, visually seamlessly navigate via the populated Dashboards.</li>
+    </ul>
+
+    <h3>6.2 Discovering and Managing Study Groups</h3>
+    <ul>
+        <li><strong>Finding a Group:</strong> Under the groups interface, browse the active inventory of academic teams. Utilizing the Search and Filter fields, drill down by specific Course Name or respective Faculty.</li>
+        <li><strong>Joining:</strong> Verify a group’s intent from its description then click "Join Group" to gain timeline access.</li>
+        <li><strong>Creating a Group:</strong> In "Create Module", submit crucial configurations (Group Name, Course Code, Description, Location Format). <em>Note: The creator automatically holds default Group Leader privileges.</em></li>
+    </ul>
+
+    <h3>6.3 Group Hub: Communication and Scheduling</h3>
+    <ul>
+        <li><strong>Scheduling Sessions (Leaders Only):</strong> Select "Create Session" in the Hub interface. Establish the Date, precise Time, Physical Location or Virtual Link, and a concise outline of modules to cover. These immediately reflect on member dashboards.</li>
+        <li><strong>Interactions:</strong> The built-in "Discussion Wall" mechanism tracks inquiries, shared resource linkages, and casual study notifications in a single persistent timeline.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>7. API Documentation</h2>
+    <p>The Application Programming Interfaces strictly adhere to well-formatted REST standard methodologies securely orchestrated by PostgREST acting over PostgreSQL, returning normalized JSON payload objects and arrays.</p>
+    
+    <table>
+        <tr>
+            <th>Endpoint & HTTP Method</th>
+            <th>Summary Description</th>
+            <th>Required Payload Keys</th>
+        </tr>
+        <tr>
+            <td><code>POST /auth/v1/signup</code></td>
+            <td>Student Registration Identity creation.</td>
+            <td><code>{ email, password, full_name, program }</code></td>
+        </tr>
+        <tr>
+            <td><code>POST /auth/v1/token?grant_type=password</code></td>
+            <td>Authentication token exchange interface.</td>
+            <td><code>{ email, password }</code> &rarr; Returns JWT</td>
+        </tr>
+        <tr>
+            <td><code>GET /rest/v1/study_groups</code></td>
+            <td>Fetch groups; manages filtering queries natively.</td>
+            <td>Query strings: <code>?course_code=eq.[Val]</code></td>
+        </tr>
+        <tr>
+            <td><code>POST /rest/v1/study_groups</code></td>
+            <td>Create new study ecosystem. (Valid JWT header expected).</td>
+            <td><code>{ name, course_code, leader_id, desc }</code></td>
+        </tr>
+        <tr>
+            <td><code>POST /rest/v1/study_sessions</code></td>
+            <td>Write new group study session record entry.</td>
+            <td><code>{ group_id, session_date, title, }</code></td>
+        </tr>
+        <tr>
+            <td><code>GET /rest/v1/group_posts?group_id=eq.[id]</code></td>
+            <td>Fetches specific ongoing discussion pipelines.</td>
+            <td>URL Identifier specific tracking.</td>
+        </tr>
+    </table>
+
+    <h2>8. GitHub Collaborative Deliverables</h2>
+    <p>The core repositories encompassing source code and database rules/schemas conform to best practices highlighting detailed commitment traces and collaborative milestones.</p>
+    <ul>
+        <li><strong>Application Main Repository Filepath (Frontend Logic):</strong> <br/> <a target="_blank" href="https://github.com/evarduwamani-ctrl/Student-Study-Group-Finder">https://github.com/evarduwamani-ctrl/Student-Study-Group-Finder</a></li>
+        <li><strong>Backend Environment Pipeline:</strong> Systematized and tightly coupled actively running via Supabase integration frameworks. Authentication logic and relational setup exist organically on the database node structure driven identically by the primary repository connections.</li>
+    </ul>
+
+    <h2>9. References</h2>
+    <p>[1] D. Flanagan, <em>JavaScript: The Definitive Guide</em>. 7th ed. Sebastopol, CA: O'Reilly Media, 2020.</p>
+    <p>[2] "Supabase Official Documentation," Supabase HQ. [Online]. Available: https://supabase.com/docs. [Accessed: April 2026].</p>
+    <p>[3] "React – A JavaScript library for building user interfaces," Meta Platforms. [Online]. Available: https://reactjs.org/. [Accessed: April 2026].</p>
+    <p>[4] "Tailwind CSS - Rapidly build modern websites without ever leaving your HTML," Tailwind Labs. [Online]. Available: https://tailwindcss.com/. [Accessed: April 2026].</p>
+    <p>[5] "IEEE Reference Guide," IEEE, Piscataway, NJ, USA, 2018.</p>
+    
+</body>
+</html>
