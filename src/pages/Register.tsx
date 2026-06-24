@@ -32,7 +32,7 @@ export default function Register() {
           year_of_study: parseInt(year),
         }).eq("user_id", user.id);
       }
-      toast.success("Account created! Check your email to verify.");
+      toast.success("Account created successfully! Welcome to StudyFinder.");
       navigate("/dashboard");
     } catch (err: any) {
       toast.error(err.message || "Failed to create account");
