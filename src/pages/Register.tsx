@@ -16,6 +16,7 @@ export default function Register() {
   const [fullName, setFullName] = useState("");
   const [program, setProgram] = useState("");
   const [year, setYear] = useState("1");
+  const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -31,6 +32,12 @@ export default function Register() {
           program_of_study: program,
           year_of_study: parseInt(year),
         }).eq("user_id", user.id);
+
+        // Add user role
+        await supabase.from("user_roles").insert({
+          user_id: user.id,
+          role: role,
+        });
       }
       toast.success("Account created successfully! Welcome to StudyFinder.");
       navigate("/dashboard");
@@ -143,19 +150,34 @@ export default function Register() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Year of Study</Label>
-              <Select value={year} onValueChange={setYear}>
-                <SelectTrigger className="h-11 rounded-xl bg-background/60 border-border/60">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Year 1</SelectItem>
-                  <SelectItem value="2">Year 2</SelectItem>
-                  <SelectItem value="3">Year 3</SelectItem>
-                  <SelectItem value="4">Year 4</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Year of Study</Label>
+                <Select value={year} onValueChange={setYear}>
+                  <SelectTrigger className="h-11 rounded-xl bg-background/60 border-border/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Year 1</SelectItem>
+                    <SelectItem value="2">Year 2</SelectItem>
+                    <SelectItem value="3">Year 3</SelectItem>
+                    <SelectItem value="4">Year 4</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Account Role</Label>
+                <Select value={role} onValueChange={setRole}>
+                  <SelectTrigger className="h-11 rounded-xl bg-background/60 border-border/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">Standard User</SelectItem>
+                    <SelectItem value="admin">Administrator</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <Button
